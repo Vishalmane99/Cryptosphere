@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptosphere - Unlocking the Future of Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #cccccc 20%, #666666 80%);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 15s infinite linear, pulseParticle 3s infinite ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0.6; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0.4; }
+        }
+        @keyframes pulseParticle {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #cccccc;
+        }
+        .navbar .brand {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .navbar nav {
+            display: flex;
+        }
+        .navbar nav ul {
+            list-style: none;
+            display: flex;
+        }
+        .navbar nav ul li {
+            margin: 0 1rem;
+            position: relative;
+        }
+        .navbar nav ul li a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: transform 0.3s, text-shadow 0.3s;
+        }
+        .navbar nav ul li a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 15px #ffffff;
+            transform: scale(1.1);
+        }
+        .navbar nav ul li a:active {
+            transform: scale(0.95);
+        }
+        .navbar nav ul li a:hover ~ .tooltip,
+        .timeframe-buttons button:hover ~ .tooltip,
+        .scroll-to-top:hover ~ .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .tooltip {
+            position: absolute;
+            background: #1a1a1a;
+            color: #cccccc;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            z-index: 20;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .navbar nav ul li .tooltip {
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #cccccc;
+            cursor: pointer;
+        }
+        .main-content {
+            margin-top: 70px;
+            padding: 2rem;
+        }
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: url('https://source.unsplash.com/random/1920x1080/?crypto') no-repeat center/cover;
+            position: relative;
+            border-radius: 10px;
+            z-index: 1;
+            filter: grayscale(100%);
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        .timeframe-buttons {
+            margin: 1rem auto;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .timeframe-buttons button {
+            padding: 0.5rem 1rem;
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            position: relative;
+        }
+        .timeframe-buttons button:hover {
+            background: #cccccc;
+            transform: scale(1.05);
+        }
+        .timeframe-buttons button.active {
+            background: #cccccc;
+            transform: scale(1.05);
+        }
+        .timeframe-buttons .tooltip {
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .btc-ticker {
+            background: rgba(51, 51, 51, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem auto;
+            max-width: 300px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        .btc-ticker span {
+            font-size: 1.4rem;
+            color: #cccccc;
+            text-shadow: 0 0 10px #666666;
+        }
+        .btc-chart {
+            background: rgba(51, 51, 51, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem auto;
+            max-width: 500px;
+            height: 200px;
+        }
+        .cta-button {
+            padding: 0.8rem 2rem;
+            background: #666666;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            transition: background 0.3s, transform 0.3s;
+            display: inline-block;
+            margin-top: 1rem;
+            animation: pulseButton 2s infinite ease-in-out;
+        }
+        .cta-button:hover {
+            background: #cccccc;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #666666;
+        }
+        @keyframes pulseButton {
+            0% { transform: scale(1); box-shadow: 0 0 10px #666666; }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px #666666; }
+            100% { transform: scale(1); box-shadow: 0 0 10px #666666; }
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+        section {
+            margin-bottom: 3rem;
+            z-index: 1;
+        }
+        section h2 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            transition: transform 0.3s;
+            opacity: 0;
+        }
+        .card.visible {
+            animation: fadeInUp 0.8s forwards;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .news-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            border: 1px solid #666666;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .news-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .news-item p {
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        .news-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 1rem;
+        }
+        .news-item.active .news-details {
+            max-height: 100px;
+            padding: 0.5rem 1rem;
+        }
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .contact-form input,
+        .contact-form textarea {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #666666;
+            border-radius: 5px;
+            color: #ffffff;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #cccccc;
+            box-shadow: 0 0 10px #cccccc;
+        }
+        .contact-form button {
+            padding: 0.8rem;
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .contact-form button:hover {
+            background: #cccccc;
+            transform: scale(1.05);
+        }
+        #ceo-founder {
+            text-align: center;
+            padding: 2rem;
+        }
+        #ceo-founder h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        #ceo-founder p {
+            font-size: 1.2rem;
+        }
+        #ceo-founder .qualification {
+            font-size: 1rem;
+            color: #cccccc;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #ceo-founder .quote {
+            font-size: 1rem;
+            color: #cccccc;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        #ceo-founder .slogan {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #ffffff;
+            margin-top: 1rem;
+            animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+        footer {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 2px solid #cccccc;
+            z-index: 1;
+        }
+        footer p {
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 10;
+        }
+        .scroll-to-top.visible {
+            opacity: 1;
+        }
+        .scroll-to-top:hover {
+            background: #cccccc;
+            transform: scale(1.1);
+        }
+        .scroll-to-top .tooltip {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            z-index: 10;
+        }
+        .chat-button:hover {
+            background: #cccccc;
+            transform: scale(1.1);
+        }
+        .chat-window {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            width: 300px;
+            height: 400px;
+            background: #1a1a1a;
+            border: 2px solid #cccccc;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .chat-window.active {
+            display: flex;
+        }
+        .chat-header {
+            background: #333333;
+            padding: 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid #cccccc;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .chat-message {
+            padding: 0.5rem;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .chat-message.bot {
+            background: #666666;
+            align-self: flex-start;
+        }
+        .chat-message.user {
+            background: #cccccc;
+            color: #000000;
+            align-self: flex-end;
+        }
+        .chat-input {
+            display: flex;
+            padding: 0.5rem;
+            border-top: 1px solid #cccccc;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #666666;
+            border-radius: 5px;
+            color: #ffffff;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .chat-input button {
+            padding: 0.5rem 1rem;
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .chat-input button:hover {
+            background: #cccccc;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 8px #ffffff, 0 0 15px #ffffff; }
+            to { text-shadow: 0 0 15px #cccccc, 0 0 25px #cccccc; }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 8px #666666, 0 0 15px #cccccc; }
+            50% { box-shadow: 0 0 15px #666666, 0 0 25px #cccccc; }
+            100% { box-shadow: 0 0 8px #666666, 0 0 15px #cccccc; }
+        }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes neonGlow {
+            from { text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff; }
+            to { text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff; }
+        }
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            .navbar nav {
+                display: none;
+                width: 100%;
+            }
+            .navbar nav.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                background: rgba(0, 0, 0, 0.9);
+                padding: 1rem;
+            }
+            .navbar nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            .navbar nav ul li {
+                margin: 0.5rem 0;
+            }
+            .navbar nav ul li .tooltip {
+                display: none;
+            }
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            .btc-ticker span {
+                font-size: 1.2rem;
+            }
+            .btc-chart {
+                max-width: 100%;
+                height: 150px;
+            }
+            .particle {
+                width: 6px;
+                height: 6px;
+            }
+            .chat-window {
+                width: 90%;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <header class="navbar">
+        <div class="brand">Cryptosphere</div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <nav>
+            <ul>
+                <li><a href="#home" data-tooltip="Go to Home">Home</a><span class="tooltip">Go to Home</span></li>
+                <li><a href="#about" data-tooltip="Learn About Us">About</a><span class="tooltip">Learn About Us</span></li>
+                <li><a href="#education" data-tooltip="Explore Courses">Education</a><span class="tooltip">Explore Courses</span></li>
+                <li><a href="#investment" data-tooltip="Investment Options">Investment</a><span class="tooltip">Investment Options</span></li>
+                <li><a href="#news" data-tooltip="Latest Crypto News">News</a><span class="tooltip">Latest Crypto News</span></li>
+                <li><a href="#contact" data-tooltip="Get in Touch">Contact</a><span class="tooltip">Get in Touch</span></li>
+                <li><a href="#ceo-founder" data-tooltip="Meet Our CEO">CEO</a><span class="tooltip">Meet Our CEO</span></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h2>Empower Your Financial Future</h2>
+                <div class="btc-ticker">
+                    <span id="btc-price">Loading Bitcoin Price...</span>
+                </div>
+                <div class="timeframe-buttons">
+                    <button onclick="updateChart('1H')" class="active" data-tooltip="Last Hour">1H</button><span class="tooltip">Last Hour</span>
+                    <button onclick="updateChart('24H')" data-tooltip="Last 24 Hours">24H</button><span class="tooltip">Last 24 Hours</span>
+                    <button onclick="updateChart('7D')" data-tooltip="Last 7 Days">7D</button><span class="tooltip">Last 7 Days</span>
+                </div>
+                <div class="btc-chart">
+                    <canvas id="bitcoinChart"></canvas>
+                </div>
+                <a href="#education" class="cta-button" onclick="startJourney()">Start Your Journey</a>
+            </div>
+        </section>
+
+        <div class="container">
+            <section id="about">
+                <h2>About Cryptosphere</h2>
+                <div class="card">
+                    <p>Cryptosphere is dedicated to educating individuals about cryptocurrency and guiding them toward smart investment opportunities. Our mission is to unlock the future of finance for everyone.</p>
+                </div>
+                <div class="card">
+                    <h3>Our Leadership</h3>
+                    <p>Guided by Mr. Vishal Mane, a visionary in crypto education and investment.</p>
+                </div>
+            </section>
+
+            <section id="education">
+                <h2>Crypto Education</h2>
+                <div class="card">
+                    <p>Our courses cover blockchain basics to advanced trading strategies. Learn with expert-led tutorials, webinars, and resources.</p>
+                    <ul>
+                        <li>Introduction to Blockchain</li>
+                        <li>Cryptocurrency Trading 101</li>
+                        <li>DeFi and Smart Contracts</li>
+                    </ul>
+                    <a href="#" class="cta-button" onclick="showEducation()">Explore Courses</a>
+                </div>
+            </section>
+
+            <section id="investment">
+                <h2>Investment Opportunities</h2>
+                <div class="card">
+                    <p>We offer curated insights and tools to navigate the crypto market, including portfolio management and risk assessment.</p>
+                    <ul>
+                        <li>Market Analysis Reports</li>
+                        <li>Portfolio Diversification Strategies</li>
+                        <li>Real-Time Market Alerts</li>
+                    </ul>
+                    <a href="#" class="cta-button" onclick="showInvestment()">Get Started</a>
+                </div>
+            </section>
+
+            <section id="news">
+                <h2>Crypto News</h2>
+                <div class="card">
+                    <div class="news-item" onclick="toggleNewsDetails(this)">
+                        <p>Coinbase announced the launch of its Bitcoin Yield Fund on May 1, 2025, offering 4%–8% returns for institutional investors seeking passive income on Bitcoin holdings.</p>
+                        <div class="news-details">
+                            <p>More details coming soon...</p>
+                        </div>
+                    </div>
+                    <div class="news-item" onclick="toggleNewsDetails(this)">
+                        <p>Brandon Lutnick, chair of Cantor Fitzgerald, is partnering with SoftBank, Tether, and Bitfinex to create a multibillion-dollar Bitcoin acquisition vehicle, as reported by the Financial Times.</p>
+                        <div class="news-details">
+                            <p>More details coming soon...</p>
+                        </div>
+                    </div>
+                    <div class="news-item" onclick="toggleNewsDetails(this)">
+                        <p>U.S. video game retailer GameStop announced on April 28, 2025, that it will include Bitcoin as a treasury reserve asset to diversify its corporate holdings.</p>
+                        <div class="news-details">
+                            <p>More details coming soon...</p>
+                        </div>
+                    </div>
+                    <div class="news-item" onclick="toggleNewsDetails(this)">
+                        <p>CME Group will launch futures contracts tied to the XRP cryptocurrency in May 2025, aiming to tap into growing interest in tokens beyond Bitcoin and Ether.</p>
+                        <div class="news-details">
+                            <p>More details coming soon...</p>
+                        </div>
+                    </div>
+                    <div class="news-item" onclick="toggleNewsDetails(this)">
+                        <p>Pakistan plans to allocate surplus electricity to Bitcoin mining and AI data centers, following discussions with several mining firms, according to the head of Pakistan's Crypto Council.</p>
+                        <div class="news-details">
+                            <p>More details coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact">
+                <h2>Contact Us</h2>
+                <div class="card">
+                    <form class="contact-form" onsubmit="handleContactSubmit(event)">
+                        <input type="text" id="name" placeholder="Your Name" required>
+                        <input type="email" id="email" placeholder="Your Email" required>
+                        <textarea id="message" placeholder="Your Message" rows="4" required></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="ceo-founder">
+                <h2><strong>CEO AND FOUNDER</strong></h2>
+                <p><strong>MR. VISHAL MANE</strong></p>
+                <p class="qualification">(BTech Electrical)</p>
+                <p class="quote">"Trading Bitcoin is like trading Apple, Amazon, Google, or Facebook a decade ago. The more you obsess over timing the market, the more mistakes you make. They were all technology networks that were dominant & destined to grow."</p>
+                <span class="slogan">"UNLOCKING THE FUTURE OF FINANCE"</span>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Cryptosphere. All rights reserved.</p>
+    </footer>
+
+    <button class="scroll-to-top" onclick="scrollToTop()" data-tooltip="Back to Top">↑<span class="tooltip">Back to Top</span></button>
+
+    <button class="chat-button" onclick="toggleChat()">💬</button>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">Live Chat</div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message bot">Hello! Welcome to Cryptosphere Live Chat.</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const numParticles = 30;
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                particle.style.animationDuration = `${10 + Math.random() * 10}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Toggle mobile menu
+        function toggleMenu() {
+            const nav = document.querySelector('nav');
+            nav.classList.toggle('active');
+        }
+
+        // Bitcoin price and chart data
+        let priceData = [94914.90]; // Current price as of 03:27 PM IST, April 29, 2025
+        let timeLabels = [new Date().toLocaleTimeString()];
+        let currentTimeframe = '1H';
+        const maxDataPoints = 20;
+
+        // Initialize Chart.js
+        const ctx = document.getElementById('bitcoinChart').getContext('2d');
+        const bitcoinChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'Bitcoin Price (USD)',
+                    data: priceData,
+                    borderColor: '#ffffff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#cccccc',
+                    pointBorderColor: '#cccccc',
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { display: false },
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#cccccc' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1a1a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#cccccc'
+                    }
+                }
+            }
+        });
+
+        // Fetch Bitcoin price and update chart (simulated with current data)
+        async function fetchBitcoinPrice() {
+            try {
+                let fluctuation;
+                if (currentTimeframe === '1H') fluctuation = (Math.random() - 0.5) * 200;
+                else if (currentTimeframe === '24H') fluctuation = (Math.random() - 0.5) * 1000;
+                else fluctuation = (Math.random() - 0.5) * 5000;
+
+                let currentPrice = 94914.90 + fluctuation;
+                if (currentPrice < 0) currentPrice = 94914.90;
+                document.getElementById('btc-price').textContent = `Bitcoin Price: $${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                priceData.push(currentPrice);
+                timeLabels.push(new Date().toLocaleTimeString());
+                if (priceData.length > maxDataPoints) {
+                    priceData.shift();
+                    timeLabels.shift();
+                }
+                bitcoinChart.data.labels = timeLabels;
+                bitcoinChart.data.datasets[0].data = priceData;
+                bitcoinChart.update();
+            } catch (error) {
+                document.getElementById('btc-price').textContent = 'Error fetching Bitcoin price';
+                console.error('Error:', error);
+            }
+        }
+
+        // Update chart timeframe
+        function updateChart(timeframe) {
+            currentTimeframe = timeframe;
+            priceData = [94914.90];
+            timeLabels = [new Date().toLocaleTimeString()];
+            fetchBitcoinPrice();
+
+            document.querySelectorAll('.timeframe-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === timeframe) btn.classList.add('active');
+            });
+        }
+
+        // Initial fetch and update every 10 seconds
+        fetchBitcoinPrice();
+        setInterval(fetchBitcoinPrice, 10000);
+
+        // Toggle news details
+        function toggleNewsDetails(element) {
+            element.classList.toggle('active');
+        }
+
+        // Handle contact form submission
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            alert(`Thank you for your message, ${name}!\nEmail: ${email}\nMessage: ${message}\nWe'll get back to you soon!`);
+            event.target.reset();
+        }
+
+        // Scroll-to-top functionality
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show/hide scroll-to-top button
+        window.addEventListener('scroll', () => {
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (window.scrollY > 300) {
+                scrollButton.classList.add('visible');
+            } else {
+                scrollButton.classList.remove('visible');
+            }
+        });
+
+        // Card animation on scroll
+        const cards = document.querySelectorAll('.card');
+        const observerOptions = {
+            threshold: 0.2
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 200);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        cards.forEach(card => observer.observe(card));
+
+        // Live chat functionality
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('active');
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = chatInput.value.trim();
+
+            if (message) {
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user';
+                userMessage.textContent = message;
+                chatMessages.appendChild(userMessage);
+
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                setTimeout(() => {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'chat-message bot';
+                    botMessage.textContent = 'Thanks for reaching out! How can I assist you today?';
+                    chatMessages.appendChild(botMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 2000);
+            }
+        }
+
+        // Interactive button functions
+        function startJourney() {
+            alert("Welcome to Cryptosphere! Let's unlock the future of finance together!");
+        }
+        function showEducation() {
+            alert("Explore our cutting-edge crypto courses. Enroll today!");
+        }
+        function showInvestment() {
+            alert("Discover investment opportunities with Cryptosphere. Start now!");
+        }
+    </script>
+</body>
+</html>
